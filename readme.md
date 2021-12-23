@@ -1,6 +1,6 @@
-# Bank Account
+# Bank Account API
 
-Access the app at: http:
+:bank: Use the app API at Heroku: [Bank Account App](https://morning-peak-01125.herokuapp.com/)
 
 # Creating an account
 
