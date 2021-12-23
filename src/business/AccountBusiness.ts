@@ -1,6 +1,6 @@
 import { AccountsRepository } from "../database/prisma/AccountsRepository"
 import { Account } from "../database/model/Account"
-import { IAccount, ICreateAccountDTO, IDepositToAccountDTO, ITransferToAccountDTO } from '../business/entities/account'
+import { ICreateAccountDTO, IDepositToAccountDTO, ITransferToAccountDTO } from '../business/entities/account'
 import { CustomError } from "../errors/CustomError"
 
 import { IdGenerator } from "./services/idGenerator"
