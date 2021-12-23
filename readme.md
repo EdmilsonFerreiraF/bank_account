@@ -13,6 +13,9 @@
 # How to run app
 
 yarn build: prepare files to production
+
 yarn start: run app
+
 yarn dev: run app for development
+
 yarn test: run app tests
