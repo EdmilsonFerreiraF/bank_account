@@ -4,14 +4,7 @@ import { ICreateAccountDTO }
 import { Account } from "../../src/database/model/Account";
 
 const accountDatabase = {
-    createAccount: jest.fn(async (account: Account) => account),
-    checkAccount: jest.fn(async (cpf: string) => {
-        if (cpf === "id_usuario") {
-            return true
-        }
-
-        return false
-    }),
+    createAccount: jest.fn(async (account: Account) => account)
 }
 const tokenGenerator = {
     generate: jest.fn((payload: { id: string, cpf: string }) => "account_token"),
@@ -77,7 +70,7 @@ describe("Create account test flow", () => {
     })
 
     test("Should return token", async () => {
-        expect.assertions(5)
+        expect.assertions(1)
 
         const account = {
             name: "account_name",
@@ -86,10 +79,6 @@ describe("Create account test flow", () => {
 
         const result = await accountBusiness.createAccount(account)
 
-        expect(result).toHaveProperty("id")
-        expect(result.getName()).toBe("account_name")
-        expect(result.getCpf()).toBe("account_cp7")
-        expect(result).toHaveProperty("balance")
-        expect(result.getBalance()).toBe(0)
+        expect(result).toHaveProperty("token")
     })
 })

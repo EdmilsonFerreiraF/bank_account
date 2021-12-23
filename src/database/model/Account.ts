@@ -1,10 +1,9 @@
 export class Account {
-    private balance = 0
-    
     constructor(
         private id: string,
         private name: string,
-        private cpf: string
+        private cpf: string,
+        private balance: number = 500,
     ) { }
 
     public getId(): string {
@@ -39,7 +38,8 @@ export class Account {
         return (data && new Account(
             data.id,
             data.name,
-            data.cpf
+            data.cpf,
+            data.balance,
         ))
     }
 }
