@@ -23,7 +23,37 @@ const accountBusiness = new AccountBusiness(
 )
 
 describe("Create account test flow", () => {
-    test("Should return error when wrong CPF format", async () => {
+    test("should throw error when cpf is missing", async () => {
+        expect.assertions(2)
+
+        const account = {
+            name: "account_name",
+        } as ICreateAccountDTO
+
+        try {
+            await accountBusiness.createAccount(account)
+        } catch (error: any) {
+            expect(error.message).toBe("Missing input")
+            expect(error.statusCode).toBe(417)
+        }
+    })
+    
+    test("Should return error when name is missing", async () => {
+        expect.assertions(2)
+
+        const account = {
+            cpf: "account_cpf"
+        } as ICreateAccountDTO
+
+        try {
+            await accountBusiness.createAccount(account)
+        } catch (error: any) {
+            expect(error.message).toBe("Missing input")
+            expect(error.statusCode).toBe(417)
+        }
+    })
+
+    test("should not be able to create an account if CPF is not 11 characters length", async () => {
         expect.assertions(2)
 
         const accountData = {
@@ -39,37 +69,7 @@ describe("Create account test flow", () => {
         }
     })
 
-    test("Should return error when no CPF", async () => {
-        expect.assertions(2)
-
-        const account = {
-            name: "account_name",
-        } as ICreateAccountDTO
-
-        try {
-            await accountBusiness.createAccount(account)
-        } catch (error: any) {
-            expect(error.message).toBe("Missing input")
-            expect(error.statusCode).toBe(417)
-        }
-    })
-
-    test("Should return error when no role", async () => {
-        expect.assertions(2)
-
-        const account = {
-            cpf: "account_cpf"
-        } as ICreateAccountDTO
-
-        try {
-            await accountBusiness.createAccount(account)
-        } catch (error: any) {
-            expect(error.message).toBe("Missing input")
-            expect(error.statusCode).toBe(417)
-        }
-    })
-
-    test("Should return token", async () => {
+    test("should create a new account and return token", async () => {
         expect.assertions(1)
 
         const account = {

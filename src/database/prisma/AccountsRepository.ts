@@ -1,6 +1,6 @@
 import { prisma } from "../client"
 
-import { IAccount, ITransferToAccountDTO } from "../../business/entities/account"
+import { IAccount, IDepositToAccountDTO, ITransferToAccountDTO } from "../../business/entities/account"
 import { Account } from "../model/Account"
 import { AuthenticationData } from "../../business/services/tokenGenerator"
 
@@ -52,7 +52,7 @@ export class AccountsRepository {
 
    public async transferToAccount(input: ITransferToAccountDTO, tokenData: AuthenticationData): Promise<Account> {
       try {
-         const userUpdatedAccount = await prisma.account.updateMany({
+         const userUpdatedAccount = await prisma.account.update({
             where: {
                cpf: tokenData.cpf,
             },
@@ -66,6 +66,25 @@ export class AccountsRepository {
          await prisma.account.update({
             where: {
                cpf: input.cpf
+            },
+            data: {
+               balance: {
+                  increment: input.money,
+               }
+            }
+         })
+
+         return this.toModel(userUpdatedAccount)
+      } catch (error: any) {
+         throw new Error(error.message)
+      }
+   }
+
+   public async depositToAccount(input: IDepositToAccountDTO, tokenData: AuthenticationData): Promise<Account> {
+      try {
+         const userUpdatedAccount = await prisma.account.update({
+            where: {
+               cpf: tokenData.cpf
             },
             data: {
                balance: {

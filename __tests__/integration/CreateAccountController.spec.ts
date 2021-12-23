@@ -18,7 +18,7 @@ describe.skip("Create account controller", () => {
         expect(res.text).toBe("{\"message\":\"Account already exists\"}")
     })
 
-    it("should not be able to create a new account", async () => {
+    it("should throw error when name is missing", async () => {
         expect.assertions(2)
 
         const res = await request(app)
@@ -31,7 +31,7 @@ describe.skip("Create account controller", () => {
         expect(res.text).toBe("{\"message\":\"Missing input\"}")
     })
 
-    it("should not be able to create a new account", async () => {
+    it("should throw error when cpf is missing", async () => {
         expect.assertions(2)
 
         const res = await request(app)
@@ -44,7 +44,7 @@ describe.skip("Create account controller", () => {
         expect(res.text).toBe("{\"message\":\"Missing input\"}")
     })
 
-    it("should not be able to create a new account", async () => {
+    it("should not be able to create an account if CPF is not 11 characters length", async () => {
         expect.assertions(2)
 
         const res = await request(app)

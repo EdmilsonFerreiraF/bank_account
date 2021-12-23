@@ -13,3 +13,7 @@ export interface ITransferToAccountDTO {
     cpf: string
     money: number
 }
+
+export interface IDepositToAccountDTO {
+    money: number
+}

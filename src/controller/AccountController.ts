@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 
 import {
-   ICreateAccountDTO, ITransferToAccountDTO
+   ICreateAccountDTO, IDepositToAccountDTO, ITransferToAccountDTO
 } from "../business/entities/account"
 
 import { AccountBusiness } from "../business/AccountBusiness"
@@ -49,7 +49,26 @@ export class AccountController {
 
          const account = await accountBusiness.transferToAccount(input, token)
 
-         res.send({ account })
+         res.status(200).send({ account })
+      } catch (error: any) {
+         const { statusCode, message } = error
+         res.status(statusCode || 400).send({ message })
+      }
+   }
+
+   public async depositToAccount(req: Request, res: Response): Promise<void> {
+      try {
+         const { money } = req.body
+
+         const input: IDepositToAccountDTO = {
+            money
+         }
+
+         const token = req.headers.authorization as string
+
+         const account = await accountBusiness.depositToAccount(input, token)
+
+         res.status(200).send({ account })
       } catch (error: any) {
          const { statusCode, message } = error
          res.status(statusCode || 400).send({ message })

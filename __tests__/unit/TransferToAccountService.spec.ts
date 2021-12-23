@@ -51,7 +51,7 @@ const accountBusiness = new AccountBusiness(
 )
 
 describe("Create account test flow", () => {
-    test("Should return error when no CPF", async () => {
+    test("should throw error when cpf is missing", async () => {
         expect.assertions(2)
 
         const account = {
@@ -68,7 +68,7 @@ describe("Create account test flow", () => {
         }
     })
 
-    test("Should return error when no role", async () => {
+    test("Should return error if money is missing", async () => {
         expect.assertions(2)
 
         const account = {
@@ -85,7 +85,7 @@ describe("Create account test flow", () => {
         }
     })
 
-    test("Should return error when wrong CPF format", async () => {
+    test("should not be able to create an account if CPF is not 11 characters length", async () => {
         expect.assertions(2)
 
         const account = {
@@ -103,7 +103,7 @@ describe("Create account test flow", () => {
         }
     })
 
-    it("should not be able to create a new account", async () => {
+    it("should throw error when money is less than or equal to zero", async () => {
         expect.assertions(2)
 
         const input = {
@@ -121,7 +121,7 @@ describe("Create account test flow", () => {
         }
     })
 
-    it("should not be able to create a new account", async () => {
+    it("should not be able to transfer to your own account", async () => {
         expect.assertions(2)
 
         const input = {
@@ -139,7 +139,7 @@ describe("Create account test flow", () => {
         }
     })
 
-    it("should not be able to create a new account", async () => {
+    it("should not transfer money to unregistered account", async () => {
         expect.assertions(2)
 
         const input = {
@@ -157,7 +157,7 @@ describe("Create account test flow", () => {
         }
     })
 
-    it("should not be able to create a new account", async () => {
+    it("should not allow transfer money more than you have", async () => {
         expect.assertions(2)
 
         const input = {
@@ -175,7 +175,7 @@ describe("Create account test flow", () => {
         }
     })
 
-    test("Should return token", async () => {
+    it("Should be able to transfer money and return token", async () => {
         expect.assertions(1)
 
         const input = {

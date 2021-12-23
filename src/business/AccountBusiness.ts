@@ -1,6 +1,6 @@
 import { AccountsRepository } from "../database/prisma/AccountsRepository"
 import { Account } from "../database/model/Account"
-import { IAccount, ICreateAccountDTO, ITransferToAccountDTO } from '../business/entities/account'
+import { IAccount, ICreateAccountDTO, IDepositToAccountDTO, ITransferToAccountDTO } from '../business/entities/account'
 import { CustomError } from "../errors/CustomError"
 
 import { IdGenerator } from "./services/idGenerator"
@@ -108,6 +108,53 @@ export class AccountBusiness {
             }
 
             const updatedAccount = await this.accountsRepository.transferToAccount(
+                input,
+                tokenData
+            )
+
+            return updatedAccount
+        } catch (error: any) {
+            throw new CustomError(error.statusCode, error.message)
+        }
+    }
+
+    public async depositToAccount(
+        input: IDepositToAccountDTO,
+        token: string
+    ): Promise<Account> {
+        try {
+            if (
+                !input.money && input.money !== 0
+            ) {
+                throw new CustomError(417, "Missing input")
+            }
+
+            if (
+                !token
+            ) {
+                throw new CustomError(417, "Missing token")
+            }
+
+            if (input.money <= 0) {
+                throw new CustomError(417, "Money value must be greater than zero")
+            }
+
+            if (input.money > 2000) {
+                throw new CustomError(417, "Money value cannot be greater than 2.000")
+            }
+
+            let bearer: string
+            let tokenString: string
+
+            if (token.includes('Bearer ')) {
+                [bearer, tokenString] = token.split('Bearer ')
+            } else {
+                tokenString = token;
+            }
+
+            const tokenData = this.tokenGenerator.verify(tokenString)
+
+            const updatedAccount = await this.accountsRepository.depositToAccount(
                 input,
                 tokenData
             )
