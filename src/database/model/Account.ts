@@ -34,7 +34,7 @@ export class Account {
         this.balance = balance
     }
 
-    public static toAccount(data?: any): Account | undefined {
+    public static toModel(data?: any): Account {
         return (data && new Account(
             data.id,
             data.name,

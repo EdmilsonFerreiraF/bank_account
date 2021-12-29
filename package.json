@@ -9,15 +9,23 @@
     "@prisma/client": "^3.7.0",
     "dotenv": "^10.0.0",
     "express": "^4.17.2",
+    "handlebars": "^4.7.7",
+    "helmet": "^4.6.0",
     "jsonwebtoken": "^8.5.1",
+    "morgan": "^1.10.0",
     "pg": "^8.7.1",
     "prisma": "^3.7.0",
-    "uuid": "^8.3.2"
+    "rotating-file-stream": "^3.0.2",
+    "uuid": "^8.3.2",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
+    "@types/compression": "^1.7.2",
     "@types/express": "^4.17.13",
     "@types/jest": "^27.0.3",
     "@types/jsonwebtoken": "^8.5.6",
+    "@types/logger": "^0.0.1",
+    "@types/morgan": "^1.9.3",
     "@types/node": "^17.0.0",
     "@types/supertest": "^2.0.11",
     "@types/uuid": "^8.3.3",
@@ -31,7 +39,8 @@
   "scripts": {
     "build": "yarn tsc",
     "start": "node dist/src/server.js",
-    "dev": "ts-node-dev src/server.ts",
-    "test": "jest"
+    "watch": "yarn babel --watch src --out-dir . --presets react-app/prod",
+    "dev": "SET NODE_ENV=dev&& ts-node-dev src/server.ts",
+    "test": "SET NODE_ENV=test&& jest"
   }
 }

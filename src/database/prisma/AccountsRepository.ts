@@ -1,23 +1,12 @@
 import { prisma } from "../client"
 
 import { IAccount, IDepositToAccountDTO, ITransferToAccountDTO } from "../../business/entities/account"
-import { Account } from "../model/Account"
 import { AuthenticationData } from "../../business/services/tokenGenerator"
+
+import { Account } from "../model/Account"
 
 export class AccountsRepository {
    protected tableName: string = "account"
-
-   private toModel(dbModel?: any): Account {
-      return (
-         dbModel &&
-         new Account(
-            dbModel.id,
-            dbModel.name,
-            dbModel.cpf,
-            dbModel.balance,
-         )
-      )
-   }
 
    public async createAccount(input: Account): Promise<Account> {
       try {
@@ -30,13 +19,13 @@ export class AccountsRepository {
             }
          })
 
-         return this.toModel(account)
+         return Account.toModel(account)
       } catch (error: any) {
          throw new Error(error.message)
       }
    }
 
-   public async getAccount(input: ITransferToAccountDTO, tokenData: AuthenticationData): Promise<Account> {
+   public async getAccount(tokenData: AuthenticationData): Promise<Account> {
       try {
          const userAccount = await prisma.account.findUnique({
             where: {
@@ -44,7 +33,7 @@ export class AccountsRepository {
             }
          })
 
-         return this.toModel(userAccount)
+         return Account.toModel(userAccount)
       } catch (error: any) {
          throw new Error(error.message)
       }
@@ -74,7 +63,7 @@ export class AccountsRepository {
             }
          })
 
-         return this.toModel(userUpdatedAccount)
+         return Account.toModel(userUpdatedAccount)
       } catch (error: any) {
          throw new Error(error.message)
       }
@@ -93,7 +82,7 @@ export class AccountsRepository {
             }
          })
 
-         return this.toModel(userUpdatedAccount)
+         return Account.toModel(userUpdatedAccount)
       } catch (error: any) {
          throw new Error(error.message)
       }

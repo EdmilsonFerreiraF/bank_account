@@ -1,10 +1,20 @@
 import { AccountsRepository } from "../database/prisma/AccountsRepository"
 import { Account } from "../database/model/Account"
+
 import { ICreateAccountDTO, IDepositToAccountDTO, ITransferToAccountDTO } from '../business/entities/account'
-import { CustomError } from "../errors/CustomError"
+
+import { InvalidInput } from "../errors/InvalidInput"
+import { Forbidden } from "../errors/Forbidden"
+import { NotFound } from "../errors/NotFound"
+import { BaseError } from "../errors/BaseError"
+import { AlreadyExists } from "../errors/AlreadyExists"
 
 import { IdGenerator } from "./services/idGenerator"
 import { TokenGenerator } from "./services/tokenGenerator"
+
+const maxMoney: number = 2000;
+const minMoney: number = 0;
+const CPFLength: number = 11;
 
 export class AccountBusiness {
     constructor(
@@ -21,11 +31,11 @@ export class AccountBusiness {
                 !input.name ||
                 !input.cpf
             ) {
-                throw new CustomError(417, "Missing input")
+                throw new InvalidInput("Missing input")
             }
 
-            if (input.cpf.length !== 11) {
-                throw new CustomError(417, "CPF must be 11 characters length")
+            if (input.cpf.length !== CPFLength) {
+                throw new InvalidInput("CPF must be 11 characters length")
             }
 
             const id: string = this.idGenerator.generate()
@@ -46,10 +56,11 @@ export class AccountBusiness {
             return token
         } catch (error: any) {
             if (error.message.includes('Unique constraint failed on the fields: (`cpf`)')) {
-                throw new CustomError(409, "Account already exists")
+                throw new AlreadyExists("Account already exists")
             }
 
-            throw new CustomError(error.statusCode, error.message)
+            console.log('error:', error)
+            throw new BaseError(error.name, error.description, error.statusCode, error.message)
         }
     }
 
@@ -60,23 +71,23 @@ export class AccountBusiness {
         try {
             if (
                 !input.cpf ||
-                !input.money && input.money !== 0
+                !input.money && input.money !== minMoney
             ) {
-                throw new CustomError(417, "Missing input")
+                throw new InvalidInput("Missing input")
             }
 
             if (
                 !token
             ) {
-                throw new CustomError(417, "Missing token")
+                throw new InvalidInput("Missing token")
             }
 
-            if (input.cpf.length !== 11) {
-                throw new CustomError(417, "CPF must be 11 characters length")
+            if (input.cpf.length !== CPFLength) {
+                throw new InvalidInput(`CPF must be ${CPFLength} characters length`)
             }
 
-            if (input.money <= 0) {
-                throw new CustomError(417, "Money value must be greater than zero")
+            if (input.money <= minMoney) {
+                throw new InvalidInput(`Money value must be greater than ${minMoney}`)
             }
 
             let bearer: string
@@ -91,20 +102,19 @@ export class AccountBusiness {
             const tokenData = this.tokenGenerator.verify(tokenString)
 
             if (input.cpf === tokenData.cpf) {
-                throw new CustomError(403, "Cannot transfer to your own account")
+                throw new Forbidden("Cannot transfer to your own account")
             }
 
-            const account = await this.accountsRepository.getAccount(
-                input,
+            const account: Account = await this.accountsRepository.getAccount(
                 tokenData
             )
 
             if (!account) {
-                throw new CustomError(404, "Could not find receiver's account")
+                throw new NotFound("Could not find receiver's account")
             }
 
-            if (account.getBalance() - input.money < 0) {
-                throw new CustomError(403, "Not enough money. Can't transfer a value above your money")
+            if (account.getBalance() - input.money < minMoney) {
+                throw new Forbidden("Not enough money. Can't transfer a value above your money")
             }
 
             const updatedAccount = await this.accountsRepository.transferToAccount(
@@ -114,7 +124,7 @@ export class AccountBusiness {
 
             return updatedAccount
         } catch (error: any) {
-            throw new CustomError(error.statusCode, error.message)
+            throw new BaseError(error.name, error.description, error.statusCode, error.message)
         }
     }
 
@@ -124,23 +134,23 @@ export class AccountBusiness {
     ): Promise<Account> {
         try {
             if (
-                !input.money && input.money !== 0
+                !input.money && input.money !== minMoney
             ) {
-                throw new CustomError(417, "Missing input")
+                throw new InvalidInput("Missing input")
             }
 
             if (
                 !token
             ) {
-                throw new CustomError(417, "Missing token")
+                throw new InvalidInput("Missing token")
             }
 
-            if (input.money <= 0) {
-                throw new CustomError(417, "Money value must be greater than zero")
+            if (input.money <= minMoney) {
+                throw new InvalidInput("Money value must be greater than zero")
             }
 
-            if (input.money > 2000) {
-                throw new CustomError(417, "Money value cannot be greater than 2.000")
+            if (input.money > maxMoney) {
+                throw new Forbidden("Money value cannot be greater than 2.000")
             }
 
             let bearer: string
@@ -161,7 +171,7 @@ export class AccountBusiness {
 
             return updatedAccount
         } catch (error: any) {
-            throw new CustomError(error.statusCode, error.message)
+            throw new BaseError(error.name, error.description, error.statusCode, error.message)
         }
     }
 }
